@@ -1,0 +1,100 @@
+name: "WISE-4012"
+manufacturer: "Advantech WISE-4012"
+model: "WISE-4012"
+description: "Modbus on WISE-4012"
+labels:
+  - "WISE-4012"
+deviceResources:
+  -
+    name: "Temperature"
+    description: "WISE-4012 40001"
+    attributes:
+      { primaryTable: "HOLDING_REGISTERS", startingAddress: "1" }
+    properties:
+      value:
+        { type: "UINT16", scale: "1"}
+      units:
+        { type: "String", readWrite: "R", defaultValue: "C"}
+  -
+    name: "Humidity"
+    description: "WISE-4012 40002"
+    attributes:
+      { primaryTable: "HOLDING_REGISTERS", startingAddress: "2" }
+    properties:
+      value:
+        { type: "UINT16", scale: "1"}
+      units:
+        { type: "String", readWrite: "R", defaultValue: "%"}
+  -
+    name: "Fan"
+    description: "WISE-4012 17"
+    attributes:
+      { primaryTable: "COILS", startingAddress: "17" }
+    properties:
+      value:
+        { type: "BOOL", size: "1"}
+      units:
+        { type: "String", readWrite: "R", defaultValue: "no"}
+  -
+    name: "Light"
+    description: "WISE-4012 18"
+    attributes:
+      { primaryTable: "COILS", startingAddress: "18" }
+    properties:
+      value:
+        { type: "BOOL", scale: "1"}
+      units:
+        { type: "String", readWrite: "R", defaultValue: "no"}
+deviceCommands:
+  -
+    name: "Values"
+    get:
+      - { index: "1", operation: "get", deviceResource: "Temperature" }
+      - { index: "2", operation: "get", deviceResource: "Humidity" }
+  -
+    name: "Configuration"
+    set:
+      - { index: "1", operation: "set", deviceResource: "Fan" }
+      - { index: "2", operation: "set", deviceResource: "Light" }
+    get:
+      - { index: "1", operation: "get", deviceResource: "Fan" }
+      - { index: "2", operation: "get", deviceResource: "Light" }
+coreCommands:
+  -
+    name: "Values"
+    get:
+      path: "/api/v1/device/{deviceId}/Values"
+      responses:
+        -
+          code: "200"
+          description: "Get the Values"
+          expectedValues: ["Temperature","Humidity"]
+        -
+          code: "500"
+          description: "internal server error"
+          expectedValues: []
+  -
+    name: "Configuration"
+    get:
+      path: "/api/v1/device/{deviceId}/Configuration"
+      responses:
+        -
+          code: "200"
+          description: "Get the Configuration"
+          expectedValues: ["Fan","Light"]
+        -
+          code: "500"
+          description: "internal server error"
+          expectedValues: []
+    put:
+      path: "/api/v1/device/{deviceId}/Configuration"
+      parameterNames: ["Fan","Light"]
+      responses:
+        -
+          code: "204"
+          description: "Set the Configuration"
+          expectedValues: []
+        -
+          code: "500"
+          description: "internal server error"
+          expectedValues: []
